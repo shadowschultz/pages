@@ -303,7 +303,7 @@
       const revealRule = $("revealRule");
       const ruleExplanation = $("ruleExplanation");
       revealRule.addEventListener("click", () => {
-        const confirmed = window.confirm("This will reveal Mr. Green’s hidden rule. You cannot unsee it. Show the answer?");
+        const confirmed = window.confirm("Before I show you the answer, think about your rule and your method of reasoning. Did you test all the possibilities? This will reveal the hidden rule for Puzzle 3. You cannot unsee it. Show the answer?");
         if (!confirmed) return;
 
         ruleExplanation.hidden = false;
