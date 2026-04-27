@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reasoning Puzzle: Cards and the Bar</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0f3b73, #061a33 70%);
+      color: #111827;
+      padding: 28px;
+    }
+
+    .app {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 26px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+      padding: clamp(22px, 4vw, 42px);
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 { margin-top: 0; }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: clamp(1.45rem, 3vw, 2.15rem);
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #374151;
+    }
+
+    .rule {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 18px;
+      padding: 16px 18px;
+      font-weight: 800;
+      color: #312e81;
+      margin: 18px 0 24px;
+    }
+
+    .cards,
+    .people {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 18px;
+      margin: 24px 0;
+    }
+
+    .choice {
+      border: 0;
+      border-radius: 22px;
+      background: #ffffff;
+      min-height: 185px;
+      cursor: pointer;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+      transition: transform 0.15s, box-shadow 0.15s, outline 0.15s;
+      outline: 4px solid transparent;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      position: relative;
+    }
+
+    .choice:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 34px rgba(15, 23, 42, 0.24);
+    }
+
+    .choice.selected {
+      outline-color: #4f46e5;
+      background: #f5f7ff;
+    }
+
+    .card-face {
+      width: 100%;
+      height: 100%;
+      min-height: 150px;
+      border: 3px solid #0f2746;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(3.5rem, 9vw, 7rem);
+      font-weight: 900;
+      color: #050505;
+    }
+
+    .person-icon {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    .person-label {
+      font-size: 1.35rem;
+      font-weight: 900;
+      text-align: center;
+      color: #111827;
+    }
+
+    .hint {
+      color: #6b7280;
+      font-size: 0.95rem;
+      margin-top: 8px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 20px;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+      background: #4f46e5;
+      color: white;
+      box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
+    }
+
+    .btn.secondary {
+      background: #e5e7eb;
+      color: #111827;
+      box-shadow: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .hidden { display: none; }
+
+    .note {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 16px 18px;
+      margin-top: 18px;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .answer-card {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .answer-card strong {
+      display: block;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .mapping {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+
+    .mapping th,
+    .mapping td {
+      border: 1px solid #e5e7eb;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .mapping th {
+      background: #eef2ff;
+      color: #312e81;
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 16px; }
+      .cards, .people { grid-template-columns: repeat(2, 1fr); }
+      .answer-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 460px) {
+      .cards, .people { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="panel" id="introPanel">
+      <h1>Logic and Rule Testing</h1>
+      <p>You will see two puzzles. In each puzzle, select only the item or items that must be checked to verify the rule. The page will not tell you whether you are right until the final explanation.</p>
+      <button class="btn" id="startBtn">Start puzzle 1</button>
+    </section>
+
+    <section class="panel hidden" id="cardPuzzle">
+      <h2>Puzzle 1: The Cards</h2>
+      <p>Each card has a <strong>letter on one side</strong> and a <strong>number on the opposite side</strong>. You can see only one side of each card.</p>
+      <div class="rule">Rule to verify: If there is an A on a card, then there is a 7 on the other side.</div>
+      <p>Select every card that must be flipped over to determine whether the rule has been broken.</p>
+
+      <div class="cards" data-puzzle="cards">
+        <button class="choice" data-value="A" aria-pressed="false"><span class="card-face">A</span></button>
+        <button class="choice" data-value="G" aria-pressed="false"><span class="card-face">G</span></button>
+        <button class="choice" data-value="7" aria-pressed="false"><span class="card-face">7</span></button>
+        <button class="choice" data-value="8" aria-pressed="false"><span class="card-face">8</span></button>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="toPuzzle2">Continue to puzzle 2</button>
+        <button class="btn secondary" data-reset="cards">Clear selection</button>
+      </div>
+      <p class="hint">No feedback yet. Your answer will be evaluated after both puzzles.</p>
+    </section>
+
+    <section class="panel hidden" id="barPuzzle">
+      <h2>Puzzle 2: The Bar</h2>
+      <p>There are four people in a bar. In order to consume alcoholic beverages, individuals must be <strong>21 years old or more</strong>.</p>
+      <div class="rule">Rule to verify: If a person is drinking alcohol, then that person is at least 21 years old.</div>
+      <p>Select every individual you would need to investigate to determine whether the rule is being broken.</p>
+
+      <div class="people" data-puzzle="bar">
+        <button class="choice" data-value="12" aria-pressed="false">
+          <div>
+            <div class="person-icon">🧍</div>
+            <div class="person-label">12 years old</div>
+          </div>
+        </button>
+        <button class="choice" data-value="35" aria-pressed="false">
+          <div>
+            <div class="person-icon">🧍</div>
+            <div class="person-label">35 years old</div>
+          </div>
+        </button>
+        <button class="choice" data-value="beer" aria-pressed="false">
+          <div>
+            <div class="person-icon">🍺</div>
+            <div class="person-label">Drinking beer</div>
+          </div>
+        </button>
+        <button class="choice" data-value="water" aria-pressed="false">
+          <div>
+            <div class="person-icon">💧</div>
+            <div class="person-label">Drinking water</div>
+          </div>
+        </button>
+      </div>
+
+      <div class="actions">
+        <button class="btn secondary" id="backToPuzzle1">Back to puzzle 1</button>
+        <button class="btn" id="showExplanation">Show explanation</button>
+        <button class="btn secondary" data-reset="bar">Clear selection</button>
+      </div>
+      <p class="hint">No feedback yet. The explanation will reveal the correct answers.</p>
+    </section>
+
+    <section class="panel hidden" id="explanationPanel">
+      <h2>Explanation and Correct Answers</h2>
+
+      <div class="answer-grid">
+        <div class="answer-card">
+          <strong>Puzzle 1 answer: flip A and 8.</strong>
+          <p>The A card must be checked because it could violate the rule if the other side is not 7. The 8 card must be checked because if the other side is A, then the rule has been broken.</p>
+          <p>You do not need to check G because the rule says nothing about cards that do not have A. You do not need to check 7 because the rule does not say that every 7 must have an A on the other side; it only says that every A must have a 7.</p>
+        </div>
+
+        <div class="answer-card">
+          <strong>Puzzle 2 answer: investigate the 12-year-old and the beer drinker.</strong>
+          <p>The beer drinker must be checked to confirm they are at least 21. The 12-year-old must be checked to confirm they are not drinking alcohol.</p>
+          <p>You do not need to check the 35-year-old because anyone 21 or older is allowed to drink alcohol under the rule. You do not need to check the water drinker because drinking water cannot violate a rule about alcohol consumption.</p>
+        </div>
+      </div>
+
+      <div class="note">
+        <h3>Why these are the same puzzle</h3>
+        <p>Both puzzles test the same conditional rule structure: <strong>If P, then Q</strong>. To test that kind of rule, you check <strong>P</strong> and <strong>not Q</strong>. You do not need to check <strong>Q</strong> or <strong>not P</strong>.</p>
+
+        <table class="mapping">
+          <thead>
+            <tr>
+              <th>Logic role</th>
+              <th>Card puzzle</th>
+              <th>Bar puzzle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>P</td>
+              <td>A</td>
+              <td>Drinking beer / alcohol</td>
+            </tr>
+            <tr>
+              <td>Q</td>
+              <td>7</td>
+              <td>Age 21 or older</td>
+            </tr>
+            <tr>
+              <td>not Q</td>
+              <td>8</td>
+              <td>12 years old</td>
+            </tr>
+            <tr>
+              <td>not P</td>
+              <td>G</td>
+              <td>Drinking water</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="actions">
+        <button class="btn secondary" id="restart">Restart</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const $ = (id) => document.getElementById(id);
+      const panels = ["introPanel", "cardPuzzle", "barPuzzle", "explanationPanel"].map($);
+
+      const show = (id) => {
+        panels.forEach((panel) => panel.classList.add("hidden"));
+        $(id).classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      document.querySelectorAll(".choice").forEach((button) => {
+        button.addEventListener("click", () => {
+          const selected = !button.classList.contains("selected");
+          button.classList.toggle("selected", selected);
+          button.setAttribute("aria-pressed", String(selected));
+        });
+      });
+
+      document.querySelectorAll("[data-reset]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const puzzle = button.dataset.reset;
+          document.querySelectorAll(`[data-puzzle='${puzzle}'] .choice`).forEach((choice) => {
+            choice.classList.remove("selected");
+            choice.setAttribute("aria-pressed", "false");
+          });
+        });
+      });
+
+      $("startBtn").addEventListener("click", () => show("cardPuzzle"));
+      $("toPuzzle2").addEventListener("click", () => show("barPuzzle"));
+      $("backToPuzzle1").addEventListener("click", () => show("cardPuzzle"));
+      $("showExplanation").addEventListener("click", () => show("explanationPanel"));
+      $("restart").addEventListener("click", () => {
+        document.querySelectorAll(".choice").forEach((choice) => {
+          choice.classList.remove("selected");
+          choice.setAttribute("aria-pressed", "false");
+        });
+        show("introPanel");
+      });
+    })();
+  </script>
+</body>
+</html>
