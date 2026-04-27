@@ -221,6 +221,65 @@
       body { padding: 16px; }
       .actions button { width: 100%; }
     }
+
+    .answer-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.58);
+    }
+
+    .answer-modal[hidden] {
+      display: none;
+    }
+
+    .answer-modal-box {
+      width: min(560px, 100%);
+      background: var(--panel, rgba(255, 255, 255, 0.96));
+      border-radius: 24px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+      padding: clamp(22px, 4vw, 34px);
+    }
+
+    .answer-modal-box h2 {
+      margin: 0 0 10px;
+    }
+
+    .answer-modal-box p {
+      margin-bottom: 0;
+    }
+
+    .answer-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .answer-modal-actions button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .answer-modal-cancel {
+      background: #e5e7eb;
+      color: var(--ink, #111827);
+    }
+
+    .answer-modal-confirm {
+      background: #dc2626;
+      color: white;
+      box-shadow: 0 10px 24px rgba(220, 38, 38, 0.28);
+    }
+
   </style>
 </head>
 <body>
@@ -262,6 +321,19 @@
     </nav>
   </main>
 
+
+  <div class="answer-modal" id="answerModal" role="dialog" aria-modal="true" aria-labelledby="answerModalTitle" hidden>
+    <div class="answer-modal-box">
+      <h2 id="answerModalTitle">Show the answer?</h2>
+      <p>Before I show you the answer, think about your rule and your method of reasoning. Did you test all the possibilities?</p>
+      <p>This will reveal the hidden rule for the puzzle. You cannot unsee it.</p>
+      <div class="answer-modal-actions">
+        <button class="answer-modal-cancel" type="button" id="cancelReveal">Keep thinking</button>
+        <button class="answer-modal-confirm" type="button" id="confirmReveal">Show the answer</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     (() => {
       const $ = (id) => document.getElementById(id);
@@ -302,10 +374,34 @@
 
       const revealRule = $("revealRule");
       const ruleExplanation = $("ruleExplanation");
-      revealRule.addEventListener("click", () => {
-        const confirmed = window.confirm("Before I show you the answer, think about your rule and your method of reasoning. Did you test all the possibilities? This will reveal the hidden rule for Puzzle 3. You cannot unsee it. Show the answer?");
-        if (!confirmed) return;
+      const answerModal = $("answerModal");
+      const cancelReveal = $("cancelReveal");
+      const confirmReveal = $("confirmReveal");
 
+      const openAnswerModal = () => {
+        answerModal.hidden = false;
+        confirmReveal.focus();
+      };
+
+      const closeAnswerModal = () => {
+        answerModal.hidden = true;
+        revealRule.focus();
+      };
+
+      revealRule.addEventListener("click", openAnswerModal);
+
+      cancelReveal.addEventListener("click", closeAnswerModal);
+
+      answerModal.addEventListener("click", (event) => {
+        if (event.target === answerModal) closeAnswerModal();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !answerModal.hidden) closeAnswerModal();
+      });
+
+      confirmReveal.addEventListener("click", () => {
+        answerModal.hidden = true;
         ruleExplanation.hidden = false;
         revealRule.hidden = true;
         ruleExplanation.scrollIntoView({ behavior: "smooth", block: "start" });
