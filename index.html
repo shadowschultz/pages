@@ -3,16 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reasoning Puzzle: Cards and the Bar</title>
+  <title>Puzzle 1: Cards and the Bar</title>
   <style>
     * { box-sizing: border-box; }
+
+    :root {
+      --bg-top: #0f3b73;
+      --bg-bottom: #061a33;
+      --panel: rgba(255, 255, 255, 0.96);
+      --ink: #111827;
+      --muted: #374151;
+      --accent: #4f46e5;
+      --accent-dark: #4338ca;
+      --soft: #eef2ff;
+      --soft-border: #c7d2fe;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+    }
 
     body {
       margin: 0;
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #0f3b73, #061a33 70%);
-      color: #111827;
+      background: radial-gradient(circle at top, var(--bg-top), var(--bg-bottom) 70%);
+      color: var(--ink);
       padding: 28px;
     }
 
@@ -22,9 +35,9 @@
     }
 
     .panel {
-      background: rgba(255, 255, 255, 0.96);
+      background: var(--panel);
       border-radius: 26px;
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+      box-shadow: var(--shadow);
       padding: clamp(22px, 4vw, 42px);
       margin-bottom: 24px;
     }
@@ -45,12 +58,12 @@
     p {
       font-size: 1.05rem;
       line-height: 1.6;
-      color: #374151;
+      color: var(--muted);
     }
 
     .rule {
-      background: #eef2ff;
-      border: 1px solid #c7d2fe;
+      background: var(--soft);
+      border: 1px solid var(--soft-border);
       border-radius: 18px;
       padding: 16px 18px;
       font-weight: 800;
@@ -87,7 +100,7 @@
     }
 
     .choice.selected {
-      outline-color: #4f46e5;
+      outline-color: var(--accent);
       background: #f5f7ff;
     }
 
@@ -108,13 +121,14 @@
     .person-icon {
       font-size: 3rem;
       margin-bottom: 10px;
+      text-align: center;
     }
 
     .person-label {
       font-size: 1.35rem;
       font-weight: 900;
       text-align: center;
-      color: #111827;
+      color: var(--ink);
     }
 
     .hint {
@@ -137,21 +151,22 @@
       font: inherit;
       font-weight: 850;
       cursor: pointer;
-      background: #4f46e5;
+      background: var(--accent);
       color: white;
       box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
+      text-decoration: none;
+      display: inline-block;
     }
+
+    .btn:hover { background: var(--accent-dark); }
 
     .btn.secondary {
       background: #e5e7eb;
-      color: #111827;
+      color: var(--ink);
       box-shadow: none;
     }
 
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .btn.secondary:hover { background: #d1d5db; }
 
     .hidden { display: none; }
 
@@ -199,8 +214,53 @@
     }
 
     .mapping th {
-      background: #eef2ff;
+      background: var(--soft);
       color: #312e81;
+    }
+
+    .puzzle-nav {
+      margin-top: 24px;
+      padding: 24px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      text-align: center;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    .puzzle-nav h3 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+      color: var(--muted);
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      font-weight: 800;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    .nav-links a:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+    }
+
+    .nav-links a.active {
+      background: #111827;
+      cursor: default;
+      pointer-events: none;
     }
 
     @media (max-width: 760px) {
@@ -211,60 +271,20 @@
 
     @media (max-width: 460px) {
       .cards, .people { grid-template-columns: 1fr; }
+      .btn { width: 100%; text-align: center; }
     }
-
-  .puzzle-nav {
-    margin-top: 40px;
-    padding: 24px;
-    border-radius: 18px;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    text-align: center;
-  }
-
-  .puzzle-nav h3 {
-    margin: 0 0 12px;
-    font-size: 1.2rem;
-    color: #374151;
-  }
-
-  .nav-links {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    flex-wrap: wrap;
-  }
-
-  .nav-links a {
-    text-decoration: none;
-    padding: 10px 16px;
-    border-radius: 999px;
-    background: #4f46e5;
-    color: white;
-    font-weight: 700;
-  }
-
-  .nav-links a:hover {
-    background: #4338ca;
-  }
-
-  .nav-links a.active {
-    background: #111827;
-    cursor: default;
-    pointer-events: none;
-  }
-</style>
+  </style>
 </head>
 <body>
   <main class="app">
     <section class="panel" id="introPanel">
-      <h1>Logic and Rule Testing</h1>
-      <p>You will see two puzzles. In each puzzle, select only the item or items that must be checked to verify the rule. The page will not tell you whether you are right until the final explanation.</p>
+      <h1>Puzzle 1: Logic and Rule Testing</h1>
+      <p>You will see two related puzzles. In each puzzle, select only the item or items that must be checked to verify the rule. The page will not tell you whether you are right until the final explanation.</p>
       <button class="btn" id="startBtn">Start puzzle 1</button>
     </section>
 
     <section class="panel hidden" id="cardPuzzle">
-      <h2>Puzzle 1: The Cards</h2>
+      <h2>Part A: The Cards</h2>
       <p>Each card has a <strong>letter on one side</strong> and a <strong>number on the opposite side</strong>. You can see only one side of each card.</p>
       <div class="rule">Rule to verify: If there is an A on a card, then there is a 7 on the other side.</div>
       <p>Select every card that must be flipped over to determine whether the rule has been broken.</p>
@@ -277,47 +297,35 @@
       </div>
 
       <div class="actions">
-        <button class="btn" id="toPuzzle2">Continue to puzzle 2</button>
+        <button class="btn" id="toPuzzle2">Continue to part B</button>
         <button class="btn secondary" data-reset="cards">Clear selection</button>
       </div>
-      <p class="hint">No feedback yet. Your answer will be evaluated after both puzzles.</p>
+      <p class="hint">No feedback yet. Your answer will be evaluated after both parts.</p>
     </section>
 
     <section class="panel hidden" id="barPuzzle">
-      <h2>Puzzle 2: The Bar</h2>
+      <h2>Part B: The Bar</h2>
       <p>There are four people in a bar. In order to consume alcoholic beverages, individuals must be <strong>21 years old or more</strong>.</p>
       <div class="rule">Rule to verify: If a person is drinking alcohol, then that person is at least 21 years old.</div>
       <p>Select every individual you would need to investigate to determine whether the rule is being broken.</p>
 
       <div class="people" data-puzzle="bar">
         <button class="choice" data-value="12" aria-pressed="false">
-          <div>
-            <div class="person-icon">🧍</div>
-            <div class="person-label">12 years old</div>
-          </div>
+          <div><div class="person-icon">🧍</div><div class="person-label">12 years old</div></div>
         </button>
         <button class="choice" data-value="35" aria-pressed="false">
-          <div>
-            <div class="person-icon">🧍</div>
-            <div class="person-label">35 years old</div>
-          </div>
+          <div><div class="person-icon">🧍</div><div class="person-label">35 years old</div></div>
         </button>
         <button class="choice" data-value="beer" aria-pressed="false">
-          <div>
-            <div class="person-icon">🍺</div>
-            <div class="person-label">Drinking beer</div>
-          </div>
+          <div><div class="person-icon">🍺</div><div class="person-label">Drinking beer</div></div>
         </button>
         <button class="choice" data-value="water" aria-pressed="false">
-          <div>
-            <div class="person-icon">💧</div>
-            <div class="person-label">Drinking water</div>
-          </div>
+          <div><div class="person-icon">💧</div><div class="person-label">Drinking water</div></div>
         </button>
       </div>
 
       <div class="actions">
-        <button class="btn secondary" id="backToPuzzle1">Back to puzzle 1</button>
+        <button class="btn secondary" id="backToPuzzle1">Back to part A</button>
         <button class="btn" id="showExplanation">Show explanation</button>
         <button class="btn secondary" data-reset="bar">Clear selection</button>
       </div>
@@ -329,13 +337,13 @@
 
       <div class="answer-grid">
         <div class="answer-card">
-          <strong>Puzzle 1 answer: flip A and 8.</strong>
+          <strong>Card answer: flip A and 8.</strong>
           <p>The A card must be checked because it could violate the rule if the other side is not 7. The 8 card must be checked because if the other side is A, then the rule has been broken.</p>
-          <p>You do not need to check G because the rule says nothing about cards that do not have A. You do not need to check 7 because the rule does not say that every 7 must have an A on the other side; it only says that every A must have a 7.</p>
+          <p>You do not need to check G because the rule says nothing about cards that do not have A. You do not need to check 7 because the rule does not say that every 7 must have an A on the other side. It only says that every A must have a 7.</p>
         </div>
 
         <div class="answer-card">
-          <strong>Puzzle 2 answer: investigate the 12-year-old and the beer drinker.</strong>
+          <strong>Bar answer: investigate the 12-year-old and the beer drinker.</strong>
           <p>The beer drinker must be checked to confirm they are at least 21. The 12-year-old must be checked to confirm they are not drinking alcohol.</p>
           <p>You do not need to check the 35-year-old because anyone 21 or older is allowed to drink alcohol under the rule. You do not need to check the water drinker because drinking water cannot violate a rule about alcohol consumption.</p>
         </div>
@@ -347,51 +355,31 @@
 
         <table class="mapping">
           <thead>
-            <tr>
-              <th>Logic role</th>
-              <th>Card puzzle</th>
-              <th>Bar puzzle</th>
-            </tr>
+            <tr><th>Logic role</th><th>Card puzzle</th><th>Bar puzzle</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td>P</td>
-              <td>A</td>
-              <td>Drinking beer / alcohol</td>
-            </tr>
-            <tr>
-              <td>Q</td>
-              <td>7</td>
-              <td>Age 21 or older</td>
-            </tr>
-            <tr>
-              <td>not Q</td>
-              <td>8</td>
-              <td>12 years old</td>
-            </tr>
-            <tr>
-              <td>not P</td>
-              <td>G</td>
-              <td>Drinking water</td>
-            </tr>
+            <tr><td>P</td><td>A</td><td>Drinking beer / alcohol</td></tr>
+            <tr><td>Q</td><td>7</td><td>Age 21 or older</td></tr>
+            <tr><td>not Q</td><td>8</td><td>12 years old</td></tr>
+            <tr><td>not P</td><td>G</td><td>Drinking water</td></tr>
           </tbody>
         </table>
       </div>
 
       <div class="actions">
-        <button class="btn secondary" id="restart">Restart</button>
+        <button class="btn secondary" id="restart">Restart puzzle</button>
       </div>
     </section>
-    <div class="puzzle-nav">
-  <h3>More Puzzles</h3>
-  <div class="nav-links">
-    <a href="index.html" data-page="index.html">Puzzle 1</a>
-    <a href="2.html" data-page="2.html">Puzzle 2</a>
-    <a href="3.html" data-page="3.html">Puzzle 3</a>
-    <a href="4.html" data-page="4.html">Puzzle 4</a>
-  </div>
-</div>
 
+    <nav class="puzzle-nav" aria-label="Puzzle navigation">
+      <h3>More Puzzles</h3>
+      <div class="nav-links">
+        <a href="index.html" data-page="index.html">Puzzle 1</a>
+        <a href="2.html" data-page="2.html">Puzzle 2</a>
+        <a href="3.html" data-page="3.html">Puzzle 3</a>
+        <a href="4.html" data-page="4.html">Puzzle 4</a>
+      </div>
+    </nav>
   </main>
 
   <script>
@@ -434,19 +422,15 @@
         });
         show("introPanel");
       });
+
+      const currentPage = window.location.pathname.split("/").pop() || "index.html";
+      document.querySelectorAll(".puzzle-nav a").forEach((link) => {
+        if (link.dataset.page === currentPage) {
+          link.classList.add("active");
+          link.setAttribute("aria-current", "page");
+        }
+      });
     })();
   </script>
-  <script>
-  (() => {
-    const currentPage = window.location.pathname.split("/").pop() || "index.html";
-
-    document.querySelectorAll(".puzzle-nav a").forEach((link) => {
-      if (link.dataset.page === currentPage) {
-        link.classList.add("active");
-        link.setAttribute("aria-current", "page");
-      }
-    });
-  })();
-</script>
 </body>
 </html>

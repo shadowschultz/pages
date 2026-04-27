@@ -3,51 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Number Rule Guessing Game</title>
+  <title>Puzzle 2: Number Rule Guessing Game</title>
   <style>
-    * {
-      box-sizing: border-box;
+    * { box-sizing: border-box; }
+
+    :root {
+      --bg-top: #0f3b73;
+      --bg-bottom: #061a33;
+      --panel: rgba(255, 255, 255, 0.96);
+      --ink: #111827;
+      --muted: #374151;
+      --accent: #4f46e5;
+      --accent-dark: #4338ca;
+      --soft: #eef2ff;
+      --soft-border: #c7d2fe;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
     }
 
     body {
       margin: 0;
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #eef2ff, #f8fafc);
-      color: #111827;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      background: radial-gradient(circle at top, var(--bg-top), var(--bg-bottom) 70%);
+      color: var(--ink);
+      padding: 28px;
     }
 
-    .card {
-      width: 100%;
-      max-width: 640px;
-      background: white;
-      border-radius: 24px;
-      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
-      padding: 32px;
+    .app {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .panel, .puzzle-nav {
+      background: var(--panel);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: clamp(22px, 4vw, 42px);
+      margin-bottom: 24px;
     }
 
     h1 {
       margin: 0 0 10px;
-      font-size: clamp(2rem, 5vw, 3rem);
+      font-size: clamp(2rem, 5vw, 3.5rem);
       line-height: 1;
     }
 
-    .subtitle {
-      margin: 0 0 24px;
-      color: #4b5563;
+    h2, h3 { margin-top: 0; }
+
+    p, .subtitle {
+      color: var(--muted);
       font-size: 1.05rem;
+      line-height: 1.6;
     }
 
+    .subtitle { margin: 0 0 24px; }
+
     .example {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 16px;
+      background: var(--soft);
+      border: 1px solid var(--soft-border);
+      border-radius: 18px;
+      padding: 16px 18px;
       margin-bottom: 24px;
+      color: #312e81;
+      font-weight: 700;
     }
 
     .example strong {
@@ -69,8 +87,8 @@
     label {
       display: grid;
       gap: 6px;
-      font-weight: 650;
-      color: #374151;
+      font-weight: 750;
+      color: var(--muted);
     }
 
     input {
@@ -85,7 +103,7 @@
     }
 
     input:focus {
-      border-color: #4f46e5;
+      border-color: var(--accent);
       box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.14);
     }
 
@@ -100,38 +118,38 @@
       border-radius: 999px;
       padding: 12px 18px;
       font: inherit;
-      font-weight: 750;
+      font-weight: 850;
       cursor: pointer;
       transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
     }
 
-    button:hover {
-      transform: translateY(-1px);
-    }
+    button:hover { transform: translateY(-1px); }
 
     .check-button {
-      background: #4f46e5;
+      background: var(--accent);
       color: white;
       box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
     }
 
+    .check-button:hover { background: var(--accent-dark); }
+
     .reset-button {
       background: #e5e7eb;
-      color: #111827;
+      color: var(--ink);
     }
+
+    .reset-button:hover { background: #d1d5db; }
 
     .result {
       margin-top: 22px;
       border-radius: 18px;
       padding: 18px;
       font-size: 1.15rem;
-      font-weight: 750;
+      font-weight: 800;
       display: none;
     }
 
-    .result.show {
-      display: block;
-    }
+    .result.show { display: block; }
 
     .result.yes {
       background: #ecfdf5;
@@ -158,7 +176,7 @@
     .history h2 {
       font-size: 1rem;
       margin: 0 0 10px;
-      color: #374151;
+      color: var(--muted);
     }
 
     .history-list {
@@ -181,111 +199,125 @@
 
     .pill {
       white-space: nowrap;
-      font-weight: 800;
+      font-weight: 900;
     }
 
-    .pill.yes {
-      color: #047857;
-    }
+    .pill.yes { color: #047857; }
+    .pill.no { color: #dc2626; }
 
-    .pill.no {
-      color: #dc2626;
-    }
-
-    @media (max-width: 520px) {
-      .card {
-        padding: 24px;
-      }
-
-      .inputs {
-        grid-template-columns: 1fr;
-      }
-
-      .actions button {
-        width: 100%;
-      }
-    }
     .puzzle-nav {
-      margin-top: 40px;
       padding: 24px;
-      border-radius: 18px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
       text-align: center;
     }
-  
+
     .puzzle-nav h3 {
       margin: 0 0 12px;
       font-size: 1.2rem;
-      color: #374151;
+      color: var(--muted);
     }
-  
+
     .nav-links {
       display: flex;
       justify-content: center;
       gap: 14px;
       flex-wrap: wrap;
     }
-  
+
     .nav-links a {
       text-decoration: none;
       padding: 10px 16px;
       border-radius: 999px;
-      background: #4f46e5;
+      background: var(--accent);
       color: white;
-      font-weight: 700;
+      font-weight: 800;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
     }
-  
+
     .nav-links a:hover {
-      background: #4338ca;
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
     }
-  
+
     .nav-links a.active {
       background: #111827;
       cursor: default;
       pointer-events: none;
     }
+
+
+    .rule-explanation {
+      border: 2px solid #c7d2fe;
+    }
+
+    .rule-explanation[hidden] {
+      display: none;
+    }
+
+    .reveal-answer {
+      margin-top: 22px;
+      background: #111827;
+      color: white;
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 20px;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(17, 24, 39, 0.24);
+    }
+
+    .reveal-answer:hover {
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 560px) {
+      body { padding: 16px; }
+      .inputs { grid-template-columns: 1fr; }
+      .actions button { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <main class="card">
-    <h1>Guess the Rule</h1>
-    <p class="subtitle">Enter three numbers. The page will tell you whether your sequence matches the hidden rule.</p>
+  <main class="app">
+    <section class="panel">
+      <h1>Puzzle 2: Guess the Rule</h1>
+      <p class="subtitle">Enter three numbers. The page will tell you whether your sequence matches the hidden rule.</p>
 
-    <section class="example" aria-label="Example matching sequence">
-      <strong>Example that matches:</strong>
-      <span>2, 4, 6</span>
+      <section class="example" aria-label="Example matching sequence">
+        <strong>Example that matches:</strong>
+        <span>2, 4, 6</span>
+      </section>
+
+      <form id="guessForm">
+        <div class="inputs">
+          <label>A <input id="numberA" type="number" step="any" required placeholder="2" /></label>
+          <label>B <input id="numberB" type="number" step="any" required placeholder="4" /></label>
+          <label>C <input id="numberC" type="number" step="any" required placeholder="6" /></label>
+        </div>
+
+        <div class="actions">
+          <button class="check-button" type="submit">Check sequence</button>
+          <button class="reset-button" type="button" id="resetButton">Reset</button>
+        </div>
+      </form>
+
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+
+      <section class="history" aria-label="Guess history">
+        <h2>Guess history</h2>
+        <ul id="historyList" class="history-list"></ul>
+      </section>
+      <button class="reveal-answer" type="button" id="revealRule">Show rule explanation</button>
     </section>
 
-    <form id="guessForm">
-      <div class="inputs">
-        <label>
-          A
-          <input id="numberA" type="number" step="any" required placeholder="2" />
-        </label>
-        <label>
-          B
-          <input id="numberB" type="number" step="any" required placeholder="4" />
-        </label>
-        <label>
-          C
-          <input id="numberC" type="number" step="any" required placeholder="6" />
-        </label>
-      </div>
-
-      <div class="actions">
-        <button class="check-button" type="submit">Check sequence</button>
-        <button class="reset-button" type="button" id="resetButton">Reset</button>
-      </div>
-    </form>
-
-    <div id="result" class="result" role="status" aria-live="polite"></div>
-
-    <section class="history" aria-label="Guess history">
-      <h2>Guess history</h2>
-      <ul id="historyList" class="history-list"></ul>
+    <section class="panel rule-explanation" id="ruleExplanation" hidden>
+      <h2>Rule Explanation</h2>
+      <p>The hidden rule is: <strong>the three numbers must be in strictly increasing order</strong>.</p>
+      <p>For a sequence written as A, B, C, it matches only when <strong>A &lt; B &lt; C</strong>. This means each number must be greater than the number before it. Equal numbers do not count, and decreasing numbers do not count.</p>
     </section>
-    <div class="puzzle-nav">
+
+    <nav class="puzzle-nav" aria-label="Puzzle navigation">
       <h3>More Puzzles</h3>
       <div class="nav-links">
         <a href="index.html" data-page="index.html">Puzzle 1</a>
@@ -293,78 +325,79 @@
         <a href="3.html" data-page="3.html">Puzzle 3</a>
         <a href="4.html" data-page="4.html">Puzzle 4</a>
       </div>
-    </div>
+    </nav>
   </main>
 
   <script>
-    const form = document.getElementById("guessForm");
-    const resetButton = document.getElementById("resetButton");
-    const result = document.getElementById("result");
-    const historyList = document.getElementById("historyList");
-
-    const inputs = {
-      a: document.getElementById("numberA"),
-      b: document.getElementById("numberB"),
-      c: document.getElementById("numberC")
-    };
-
-    function matchesRule(a, b, c) {
-      return a < b && b < c;
-    }
-
-    function showResult(message, type) {
-      result.textContent = message;
-      result.className = `result show ${type}`;
-    }
-
-    function addToHistory(a, b, c, didMatch) {
-      const item = document.createElement("li");
-      const sequence = document.createElement("span");
-      const verdict = document.createElement("span");
-
-      sequence.textContent = `${a}, ${b}, ${c}`;
-      verdict.textContent = didMatch ? "YES" : "NO";
-      verdict.className = `pill ${didMatch ? "yes" : "no"}`;
-
-      item.append(sequence, verdict);
-      historyList.prepend(item);
-    }
-
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-
-      const a = Number(inputs.a.value);
-      const b = Number(inputs.b.value);
-      const c = Number(inputs.c.value);
-
-      if (![a, b, c].every(Number.isFinite)) {
-        showResult("Please enter three valid numbers.", "error");
-        return;
-      }
-
-      const didMatch = matchesRule(a, b, c);
-
-      if (didMatch) {
-        showResult("Yes — this sequence matches the rule.", "yes");
-      } else {
-        showResult("No — this sequence does not match the rule.", "no");
-      }
-
-      addToHistory(a, b, c, didMatch);
-    });
-
-    resetButton.addEventListener("click", () => {
-      form.reset();
-      result.className = "result";
-      result.textContent = "";
-      historyList.innerHTML = "";
-      inputs.a.focus();
-    });
-  </script>
-  <script>
     (() => {
+      const $ = (id) => document.getElementById(id);
+      const form = $("guessForm");
+      const resetButton = $("resetButton");
+      const result = $("result");
+      const historyList = $("historyList");
+      const fields = [$("numberA"), $("numberB"), $("numberC")];
+
+      const check = (...values) => {
+        const nums = values.map(Number);
+        if (!nums.every(Number.isFinite)) return null;
+        return nums.slice(1).every((value, index) => value - nums[index] > 0);
+      };
+
+      const showResult = (message, type) => {
+        result.textContent = message;
+        result.className = `result show ${type}`;
+      };
+
+      const addToHistory = (nums, didMatch) => {
+        const item = document.createElement("li");
+        const sequence = document.createElement("span");
+        const verdict = document.createElement("span");
+        sequence.textContent = nums.join(", ");
+        verdict.textContent = didMatch ? "YES" : "NO";
+        verdict.className = `pill ${didMatch ? "yes" : "no"}`;
+        item.append(sequence, verdict);
+        historyList.prepend(item);
+      };
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const nums = fields.map((field) => Number(field.value));
+        const didMatch = check(...nums);
+
+        if (didMatch === null) {
+          showResult("Please enter three valid numbers.", "error");
+          return;
+        }
+
+        showResult(
+          didMatch ? "Yes — this sequence matches the rule." : "No — this sequence does not match the rule.",
+          didMatch ? "yes" : "no"
+        );
+
+        addToHistory(nums, didMatch);
+      });
+
+      resetButton.addEventListener("click", () => {
+        form.reset();
+        result.className = "result";
+        result.textContent = "";
+        historyList.innerHTML = "";
+        fields[0].focus();
+      });
+
+
+      const revealRule = $("revealRule");
+      const ruleExplanation = $("ruleExplanation");
+      revealRule.addEventListener("click", () => {
+        const confirmed = window.confirm("This will reveal the hidden rule for Puzzle 2. You cannot unsee it. Show the answer?");
+        if (!confirmed) return;
+
+        ruleExplanation.hidden = false;
+        revealRule.hidden = true;
+        ruleExplanation.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
       const currentPage = window.location.pathname.split("/").pop() || "index.html";
-  
       document.querySelectorAll(".puzzle-nav a").forEach((link) => {
         if (link.dataset.page === currentPage) {
           link.classList.add("active");

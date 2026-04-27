@@ -3,53 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Grandma Likes</title>
+  <title>Puzzle 4: My Grandma Likes</title>
   <style>
-    * {
-      box-sizing: border-box;
+    * { box-sizing: border-box; }
+
+    :root {
+      --bg-top: #0f3b73;
+      --bg-bottom: #061a33;
+      --panel: rgba(255, 255, 255, 0.96);
+      --ink: #111827;
+      --muted: #374151;
+      --accent: #4f46e5;
+      --accent-dark: #4338ca;
+      --soft: #eef2ff;
+      --soft-border: #c7d2fe;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
     }
 
     body {
       margin: 0;
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #ecfdf5, #f8fafc);
-      color: #102018;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      background: radial-gradient(circle at top, var(--bg-top), var(--bg-bottom) 70%);
+      color: var(--ink);
+      padding: 28px;
     }
 
-    .card {
-      width: 100%;
-      max-width: 560px;
-      background: white;
-      border-radius: 24px;
-      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
-      padding: 32px;
+    .app {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .panel, .puzzle-nav {
+      background: var(--panel);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: clamp(22px, 4vw, 42px);
+      margin-bottom: 24px;
     }
 
     h1 {
       margin: 0 0 10px;
-      font-size: clamp(2rem, 5vw, 3rem);
+      font-size: clamp(2rem, 5vw, 3.5rem);
       line-height: 1;
     }
 
-    .subtitle {
-      margin: 0 0 24px;
-      color: #4b5563;
+    h2, h3 { margin-top: 0; }
+
+    p, .subtitle {
+      color: var(--muted);
       font-size: 1.05rem;
+      line-height: 1.6;
     }
 
+    .subtitle { margin: 0 0 24px; }
+
     .example {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 16px;
+      background: var(--soft);
+      border: 1px solid var(--soft-border);
+      border-radius: 18px;
+      padding: 16px 18px;
       margin-bottom: 24px;
-      color: #374151;
-      font-weight: 650;
+      color: #312e81;
+      font-weight: 750;
     }
 
     form {
@@ -60,8 +76,8 @@
     label {
       display: grid;
       gap: 8px;
-      font-weight: 700;
-      color: #374151;
+      font-weight: 750;
+      color: var(--muted);
     }
 
     input {
@@ -76,8 +92,8 @@
     }
 
     input:focus {
-      border-color: #16a34a;
-      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.14);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.14);
     }
 
     .actions {
@@ -91,39 +107,38 @@
       border-radius: 999px;
       padding: 12px 18px;
       font: inherit;
-      font-weight: 800;
+      font-weight: 850;
       cursor: pointer;
       transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
     }
 
-    button:hover {
-      transform: translateY(-1px);
-    }
+    button:hover { transform: translateY(-1px); }
 
     .check-button {
-      background: #16a34a;
+      background: var(--accent);
       color: white;
-      box-shadow: 0 10px 24px rgba(22, 163, 74, 0.28);
+      box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
     }
+
+    .check-button:hover { background: var(--accent-dark); }
 
     .reset-button {
       background: #e5e7eb;
-      color: #111827;
+      color: var(--ink);
     }
+
+    .reset-button:hover { background: #d1d5db; }
 
     .result {
       margin-top: 22px;
       border-radius: 18px;
       padding: 18px;
       font-size: 1.15rem;
-      font-weight: 800;
+      font-weight: 850;
       display: none;
-      overflow-wrap: anywhere;
     }
 
-    .result.show {
-      display: block;
-    }
+    .result.show { display: block; }
 
     .result.likes {
       background: #ecfdf5;
@@ -143,80 +158,111 @@
       color: #92400e;
     }
 
-    @media (max-width: 520px) {
-      .card {
-        padding: 24px;
-      }
-
-      .actions button {
-        width: 100%;
-      }
-    }
-      .puzzle-nav {
-      margin-top: 40px;
+    .puzzle-nav {
       padding: 24px;
-      border-radius: 18px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
       text-align: center;
     }
-  
+
     .puzzle-nav h3 {
       margin: 0 0 12px;
       font-size: 1.2rem;
-      color: #374151;
+      color: var(--muted);
     }
-  
+
     .nav-links {
       display: flex;
       justify-content: center;
       gap: 14px;
       flex-wrap: wrap;
     }
-  
+
     .nav-links a {
       text-decoration: none;
       padding: 10px 16px;
       border-radius: 999px;
-      background: #4f46e5;
+      background: var(--accent);
       color: white;
-      font-weight: 700;
+      font-weight: 800;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
     }
-  
+
     .nav-links a:hover {
-      background: #4338ca;
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
     }
-  
+
     .nav-links a.active {
       background: #111827;
       cursor: default;
       pointer-events: none;
     }
+
+
+    .rule-explanation {
+      border: 2px solid #c7d2fe;
+    }
+
+    .rule-explanation[hidden] {
+      display: none;
+    }
+
+    .reveal-answer {
+      margin-top: 22px;
+      background: #111827;
+      color: white;
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 20px;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(17, 24, 39, 0.24);
+    }
+
+    .reveal-answer:hover {
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 560px) {
+      body { padding: 16px; }
+      .actions button { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <main class="card">
-    <h1>My Grandma Likes</h1>
-    <p class="subtitle">Type one word to see whether my grandma likes it.</p>
+  <main class="app">
+    <section class="panel">
+      <h1>Puzzle 4: My Grandma Likes</h1>
+      <p class="subtitle">Type one word to see whether my grandma likes it. Try to figure out the hidden rule.</p>
 
-    <section class="example" aria-label="Example">
-      My grandma likes coffee but not tea.
+      <section class="example" aria-label="Example clue">
+        My grandma likes coffee but not tea.
+      </section>
+
+      <form id="grandmaForm">
+        <label>
+          Word
+          <input id="wordInput" type="text" autocomplete="off" required />
+        </label>
+
+        <div class="actions">
+          <button class="check-button" type="submit">Check word</button>
+          <button class="reset-button" type="button" id="resetButton">Reset</button>
+        </div>
+      </form>
+
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+      <button class="reveal-answer" type="button" id="revealRule">Show rule explanation</button>
     </section>
 
-    <form id="grandmaForm">
-      <label>
-        Word
-        <input id="wordInput" type="text" autocomplete="off" required />
-      </label>
+    <section class="panel rule-explanation" id="ruleExplanation" hidden>
+      <h2>Rule Explanation</h2>
+      <p>My grandma does <strong>not</strong> like words that contain the letter <strong>T</strong>.</p>
+      <p>The word must be a single word using letters only. If the word contains T or t, she does not like it. If it does not contain T or t, she likes it.</p>
+    </section>
 
-      <div class="actions">
-        <button class="check-button" type="submit">Check word</button>
-        <button class="reset-button" type="button" id="resetButton">Reset</button>
-      </div>
-    </form>
-
-    <div id="result" class="result" role="status" aria-live="polite"></div>
-    <div class="puzzle-nav">
+    <nav class="puzzle-nav" aria-label="Puzzle navigation">
       <h3>More Puzzles</h3>
       <div class="nav-links">
         <a href="index.html" data-page="index.html">Puzzle 1</a>
@@ -224,7 +270,7 @@
         <a href="3.html" data-page="3.html">Puzzle 3</a>
         <a href="4.html" data-page="4.html">Puzzle 4</a>
       </div>
-    </div>
+    </nav>
   </main>
 
   <script>
@@ -234,8 +280,8 @@
       const input = $("wordInput");
       const result = $("result");
 
-      const single = (value) => /^[A-Za-z]+$/.test(value);
-      const grandma = (value) => !/t/i.test(value);
+      const isSingleWord = (value) => /^[A-Za-z]+$/.test(value);
+      const checkPreference = (value) => !/t/i.test(value);
 
       const show = (message, type) => {
         result.textContent = message;
@@ -244,19 +290,17 @@
 
       form.addEventListener("submit", (event) => {
         event.preventDefault();
-
         const word = input.value.trim();
 
-        if (!single(word)) {
-          show("Please enter a single word.", "error");
+        if (!isSingleWord(word)) {
+          show("Please enter a single word using letters only.", "error");
           return;
         }
 
-        if (grandma(word)) {
-          show(`My grandma likes ${word}`, "likes");
-        } else {
-          show(`My grandma does NOT like ${word}`, "dislikes");
-        }
+        show(
+          checkPreference(word) ? `My grandma likes ${word}` : `My grandma does NOT like ${word}`,
+          checkPreference(word) ? "likes" : "dislikes"
+        );
       });
 
       $("resetButton").addEventListener("click", () => {
@@ -265,12 +309,20 @@
         result.textContent = "";
         input.focus();
       });
-    })();
-  </script>
-  <script>
-    (() => {
+
+
+      const revealRule = $("revealRule");
+      const ruleExplanation = $("ruleExplanation");
+      revealRule.addEventListener("click", () => {
+        const confirmed = window.confirm("This will reveal my grandma’s hidden rule. You cannot unsee it. Show the answer?");
+        if (!confirmed) return;
+
+        ruleExplanation.hidden = false;
+        revealRule.hidden = true;
+        ruleExplanation.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
       const currentPage = window.location.pathname.split("/").pop() || "index.html";
-  
       document.querySelectorAll(".puzzle-nav a").forEach((link) => {
         if (link.dataset.page === currentPage) {
           link.classList.add("active");
