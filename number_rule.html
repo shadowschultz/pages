@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Number Rule Guessing Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #eef2ff, #f8fafc);
+      color: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 640px;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
+      padding: 32px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: #4b5563;
+      font-size: 1.05rem;
+    }
+
+    .example {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .example strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-weight: 650;
+      color: #374151;
+    }
+
+    input {
+      width: 100%;
+      font: inherit;
+      font-size: 1.15rem;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.14);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font: inherit;
+      font-weight: 750;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .check-button {
+      background: #4f46e5;
+      color: white;
+      box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
+    }
+
+    .reset-button {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .result {
+      margin-top: 22px;
+      border-radius: 18px;
+      padding: 18px;
+      font-size: 1.15rem;
+      font-weight: 750;
+      display: none;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result.yes {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+    }
+
+    .result.no {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .result.error {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+    }
+
+    .history {
+      margin-top: 28px;
+    }
+
+    .history h2 {
+      font-size: 1rem;
+      margin: 0 0 10px;
+      color: #374151;
+    }
+
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .history-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .pill {
+      white-space: nowrap;
+      font-weight: 800;
+    }
+
+    .pill.yes {
+      color: #047857;
+    }
+
+    .pill.no {
+      color: #dc2626;
+    }
+
+    @media (max-width: 520px) {
+      .card {
+        padding: 24px;
+      }
+
+      .inputs {
+        grid-template-columns: 1fr;
+      }
+
+      .actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Guess the Rule</h1>
+    <p class="subtitle">Enter three numbers. The page will tell you whether your sequence matches the hidden rule.</p>
+
+    <section class="example" aria-label="Example matching sequence">
+      <strong>Example that matches:</strong>
+      <span>2, 4, 6</span>
+    </section>
+
+    <form id="guessForm">
+      <div class="inputs">
+        <label>
+          A
+          <input id="numberA" type="number" step="any" required placeholder="2" />
+        </label>
+        <label>
+          B
+          <input id="numberB" type="number" step="any" required placeholder="4" />
+        </label>
+        <label>
+          C
+          <input id="numberC" type="number" step="any" required placeholder="6" />
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="check-button" type="submit">Check sequence</button>
+        <button class="reset-button" type="button" id="resetButton">Reset</button>
+      </div>
+    </form>
+
+    <div id="result" class="result" role="status" aria-live="polite"></div>
+
+    <section class="history" aria-label="Guess history">
+      <h2>Guess history</h2>
+      <ul id="historyList" class="history-list"></ul>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById("guessForm");
+    const resetButton = document.getElementById("resetButton");
+    const result = document.getElementById("result");
+    const historyList = document.getElementById("historyList");
+
+    const inputs = {
+      a: document.getElementById("numberA"),
+      b: document.getElementById("numberB"),
+      c: document.getElementById("numberC")
+    };
+
+    function matchesRule(a, b, c) {
+      return a < b && b < c;
+    }
+
+    function showResult(message, type) {
+      result.textContent = message;
+      result.className = `result show ${type}`;
+    }
+
+    function addToHistory(a, b, c, didMatch) {
+      const item = document.createElement("li");
+      const sequence = document.createElement("span");
+      const verdict = document.createElement("span");
+
+      sequence.textContent = `${a}, ${b}, ${c}`;
+      verdict.textContent = didMatch ? "YES" : "NO";
+      verdict.className = `pill ${didMatch ? "yes" : "no"}`;
+
+      item.append(sequence, verdict);
+      historyList.prepend(item);
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const a = Number(inputs.a.value);
+      const b = Number(inputs.b.value);
+      const c = Number(inputs.c.value);
+
+      if (![a, b, c].every(Number.isFinite)) {
+        showResult("Please enter three valid numbers.", "error");
+        return;
+      }
+
+      const didMatch = matchesRule(a, b, c);
+
+      if (didMatch) {
+        showResult("Yes — this sequence matches the rule.", "yes");
+      } else {
+        showResult("No — this sequence does not match the rule.", "no");
+      }
+
+      addToHistory(a, b, c, didMatch);
+    });
+
+    resetButton.addEventListener("click", () => {
+      form.reset();
+      result.className = "result";
+      result.textContent = "";
+      historyList.innerHTML = "";
+      inputs.a.focus();
+    });
+  </script>
+</body>
+</html>
