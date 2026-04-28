@@ -221,6 +221,44 @@
       color: #312e81;
     }
 
+
+
+    .history {
+      margin-top: 28px;
+    }
+
+    .history h2 {
+      font-size: 1rem;
+      margin: 0 0 10px;
+      color: var(--muted);
+    }
+
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .history-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .pill {
+      white-space: nowrap;
+      font-weight: 900;
+    }
+
+    .pill.yes { color: #047857; }
+    .pill.no { color: #dc2626; }
+
     .puzzle-nav {
       margin-top: 24px;
       padding: 24px;
@@ -266,6 +304,63 @@
       pointer-events: none;
     }
 
+
+
+    .final-choice {
+      margin: 0 0 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      color: #312e81;
+      font-weight: 800;
+    }
+
+    .final-choice span { color: #111827; }
+
+    .answer-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.58);
+    }
+
+    .answer-modal[hidden] { display: none; }
+
+    .answer-modal-box {
+      width: min(560px, 100%);
+      background: var(--panel, rgba(255, 255, 255, 0.96));
+      border-radius: 24px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+      padding: clamp(22px, 4vw, 34px);
+    }
+
+    .answer-modal-box h2 { margin: 0 0 10px; }
+    .answer-modal-box p { margin-bottom: 0; }
+
+    .answer-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .answer-modal-actions button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .answer-modal-cancel { background: #e5e7eb; color: var(--ink, #111827); }
+    .answer-modal-confirm { background: #dc2626; color: white; box-shadow: 0 10px 24px rgba(220, 38, 38, 0.28); }
+
     @media (max-width: 760px) {
       body { padding: 16px; }
       .cards, .people { grid-template-columns: repeat(2, 1fr); }
@@ -304,6 +399,7 @@
         <button class="btn secondary" data-reset="cards">Clear selection</button>
       </div>
       <p class="hint">No feedback yet. Your answer will be evaluated after both parts.</p>
+
     </section>
 
     <section class="panel hidden" id="barPuzzle">
@@ -333,6 +429,7 @@
         <button class="btn secondary" data-reset="bar">Clear selection</button>
       </div>
       <p class="hint">No feedback yet. The explanation will reveal the correct answers.</p>
+
     </section>
 
     <section class="panel hidden" id="explanationPanel">
@@ -341,12 +438,14 @@
       <div class="answer-grid">
         <div class="answer-card">
           <strong>Card answer: flip A and 8.</strong>
+          <p class="final-choice">Your final selection: <span id="finalCardSelection">None selected</span></p>
           <p>The A card must be checked because it could violate the rule if the other side is not 7. The 8 card must be checked because if the other side is A, then the rule has been broken.</p>
           <p>You do not need to check G because the rule says nothing about cards that do not have A. You do not need to check 7 because the rule does not say that every 7 must have an A on the other side. It only says that every A must have a 7.</p>
         </div>
 
         <div class="answer-card">
           <strong>Bar answer: investigate the 12-year-old and the beer drinker.</strong>
+          <p class="final-choice">Your final selection: <span id="finalBarSelection">None selected</span></p>
           <p>The beer drinker must be checked to confirm they are at least 21. The 12-year-old must be checked to confirm they are not drinking alcohol.</p>
           <p>You do not need to check the 35-year-old because anyone 21 or older is allowed to drink alcohol under the rule. You do not need to check the water drinker because drinking water cannot violate a rule about alcohol consumption.</p>
         </div>
@@ -382,14 +481,31 @@
         <a href="2.html" data-page="2.html">Puzzle 2</a>
         <a href="3.html" data-page="3.html">Puzzle 3</a>
         <a href="4.html" data-page="4.html">Puzzle 4</a>
+        <a href="5.html" data-page="5.html">Puzzle 5</a>
       </div>
     </nav>
   </main>
+
+
+  <div class="answer-modal" id="answerModal" role="dialog" aria-modal="true" aria-labelledby="answerModalTitle" hidden>
+    <div class="answer-modal-box">
+      <h2 id="answerModalTitle">Show the answer?</h2>
+      <p>Before I show you the answer, think about your rule and your method of reasoning. Did you test all the possibilities?</p>
+      <p>This will reveal the hidden rule for the puzzle. You cannot unsee it.</p>
+      <div class="answer-modal-actions">
+        <button class="answer-modal-cancel" type="button" id="cancelReveal">Keep thinking</button>
+        <button class="answer-modal-confirm" type="button" id="confirmReveal">Show the answer</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     (() => {
       const $ = (id) => document.getElementById(id);
       const panels = ["introPanel", "cardPuzzle", "barPuzzle", "explanationPanel"].map($);
+      const answerModal = $("answerModal");
+      const cancelReveal = $("cancelReveal");
+      const confirmReveal = $("confirmReveal");
 
       const show = (id) => {
         panels.forEach((panel) => panel.classList.add("hidden"));
@@ -418,7 +534,37 @@
       $("startBtn").addEventListener("click", () => show("cardPuzzle"));
       $("toPuzzle2").addEventListener("click", () => show("barPuzzle"));
       $("backToPuzzle1").addEventListener("click", () => show("cardPuzzle"));
-      $("showExplanation").addEventListener("click", () => show("explanationPanel"));
+      const openAnswerModal = () => {
+        answerModal.hidden = false;
+        confirmReveal.focus();
+      };
+
+      const closeAnswerModal = () => {
+        answerModal.hidden = true;
+        $("showExplanation").focus();
+      };
+
+      $("showExplanation").addEventListener("click", openAnswerModal);
+      cancelReveal.addEventListener("click", closeAnswerModal);
+      answerModal.addEventListener("click", (event) => {
+        if (event.target === answerModal) closeAnswerModal();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !answerModal.hidden) closeAnswerModal();
+      });
+
+      const getSelectedValues = (puzzle) => {
+        const selected = [...document.querySelectorAll(`[data-puzzle='${puzzle}'] .choice.selected`)]
+          .map((choice) => choice.dataset.value);
+        return selected.length ? selected.join(", ") : "None selected";
+      };
+
+      confirmReveal.addEventListener("click", () => {
+        answerModal.hidden = true;
+        $("finalCardSelection").textContent = getSelectedValues("cards");
+        $("finalBarSelection").textContent = getSelectedValues("bar");
+        show("explanationPanel");
+      });
       $("restart").addEventListener("click", () => {
         document.querySelectorAll(".choice").forEach((choice) => {
           choice.classList.remove("selected");

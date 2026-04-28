@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mr. Green Likes</title>
+  <title>Counterexample Challenge</title>
   <link rel="icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
@@ -33,7 +33,7 @@
     }
 
     .app {
-      max-width: 700px;
+      max-width: 760px;
       margin: 0 auto;
     }
 
@@ -68,7 +68,12 @@
       padding: 16px 18px;
       margin-bottom: 24px;
       color: #312e81;
-      font-weight: 750;
+      font-weight: 700;
+    }
+
+    .example strong {
+      display: block;
+      margin-bottom: 6px;
     }
 
     form {
@@ -76,9 +81,15 @@
       gap: 16px;
     }
 
+    .inputs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
     label {
       display: grid;
-      gap: 8px;
+      gap: 6px;
       font-weight: 750;
       color: var(--muted);
     }
@@ -137,19 +148,19 @@
       border-radius: 18px;
       padding: 18px;
       font-size: 1.15rem;
-      font-weight: 850;
+      font-weight: 800;
       display: none;
     }
 
     .result.show { display: block; }
 
-    .result.likes {
+    .result.yes {
       background: #ecfdf5;
       border: 1px solid #a7f3d0;
       color: #065f46;
     }
 
-    .result.dislikes {
+    .result.no {
       background: #fef2f2;
       border: 1px solid #fecaca;
       color: #991b1b;
@@ -160,6 +171,42 @@
       border: 1px solid #fde68a;
       color: #92400e;
     }
+
+    .history {
+      margin-top: 28px;
+    }
+
+    .history h2 {
+      font-size: 1rem;
+      margin: 0 0 10px;
+      color: var(--muted);
+    }
+
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .history-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .pill {
+      white-space: nowrap;
+      font-weight: 900;
+    }
+
+    .pill.yes { color: #047857; }
+    .pill.no { color: #dc2626; }
 
     .puzzle-nav {
       padding: 24px;
@@ -229,6 +276,7 @@
 
     @media (max-width: 560px) {
       body { padding: 16px; }
+      .inputs { grid-template-columns: 1fr; }
       .actions button { width: 100%; }
     }
 
@@ -295,33 +343,44 @@
 <body>
   <main class="app">
     <section class="panel">
-      <h1>Mr. Green Likes</h1>
-      <p class="subtitle">Type one word to see whether Mr. Green likes it. Try to figure out the hidden rule.</p>
-      <section class="example" aria-label="Example clue">
-        Mr. Green likes books but not reading.
+      <h1>Counterexample Challenge</h1>
+      <p class="subtitle">Your job is to test a possible rule by trying to break it. This is the same mindset that helps with debugging and finding edge cases.</p>
+
+      <section class="example" aria-label="Counterexample challenge">
+        <strong>Possible rule someone guessed:</strong>
+        <span>The numbers must increase by exactly 2 each time, like 2, 4, 6.</span>
       </section>
 
-      <form id="greenForm">
-        <label>
-          Word
-          <input id="wordInput" type="text" autocomplete="off" required />
-        </label>
+      <p>Enter three numbers. The page will tell you whether your sequence is accepted by the original hidden rule and whether it is a counterexample to the guessed rule above.</p>
+
+      <form id="counterForm">
+        <div class="inputs">
+          <label>A <input id="numberA" type="number" step="any" required /></label>
+          <label>B <input id="numberB" type="number" step="any" required /></label>
+          <label>C <input id="numberC" type="number" step="any" required /></label>
+        </div>
 
         <div class="actions">
-          <button class="check-button" type="submit">Check word</button>
+          <button class="check-button" type="submit">Test sequence</button>
           <button class="reset-button" type="button" id="resetButton">Reset</button>
         </div>
       </form>
 
       <div id="result" class="result" role="status" aria-live="polite"></div>
+
+      <section class="history" aria-label="Test history">
+        <h2>Test history</h2>
+        <ul id="historyList" class="history-list"></ul>
+      </section>
       <button class="reveal-answer" type="button" id="revealRule">Show rule explanation</button>
     </section>
 
     <section class="panel rule-explanation" id="ruleExplanation" hidden>
       <h2>Rule Explanation</h2>
-      <p>Mr. Green likes words that contain <strong>at least one pair of double letters</strong>.</p>
-      <p>The word must be a single word using letters only. If the word has two of the same letter in a row, Mr. Green likes it. If it does not, he does not like it. That's why Mr. Green likes books but not reading.</p>
-      <p>Did you get it right?</p>
+      <p>A <strong>counterexample</strong> is an example that proves a proposed rule is not always true.</p>
+      <p>For this activity, the original hidden rule is still: <strong>the three numbers must be in strictly increasing order</strong>. The guessed rule, “the numbers must increase by exactly 2,” is too narrow.</p>
+      <p>For example, <strong>1, 5, 100</strong> is accepted by the original rule because it is increasing, but it breaks the guessed rule because it does not increase by exactly 2. That makes it a strong counterexample.</p>
+      <p>This is the debugging mindset: do not only test examples that confirm your idea. Try examples that could prove your idea wrong.</p>
     </section>
 
     <nav class="puzzle-nav" aria-label="Puzzle navigation">
@@ -331,10 +390,10 @@
         <a href="2.html" data-page="2.html">Puzzle 2</a>
         <a href="3.html" data-page="3.html">Puzzle 3</a>
         <a href="4.html" data-page="4.html">Puzzle 4</a>
+        <a href="5.html" data-page="5.html">Puzzle 5</a>
       </div>
     </nav>
   </main>
-
 
   <div class="answer-modal" id="answerModal" role="dialog" aria-modal="true" aria-labelledby="answerModalTitle" hidden>
     <div class="answer-modal-box">
@@ -351,40 +410,63 @@
   <script>
     (() => {
       const $ = (id) => document.getElementById(id);
-      const form = $("greenForm");
-      const input = $("wordInput");
+      const form = $("counterForm");
+      const resetButton = $("resetButton");
       const result = $("result");
+      const historyList = $("historyList");
+      const fields = [$("numberA"), $("numberB"), $("numberC")];
 
-      const isSingleWord = (value) => /^[A-Za-z]+$/.test(value);
-      const checkPreference = (value) => /([A-Za-z])\1/i.test(value);
+      const originalRule = (a, b, c) => a < b && b < c;
+      const guessedRule = (a, b, c) => (b - a === 2) && (c - b === 2);
 
-      const show = (message, type) => {
+      const showResult = (message, type) => {
         result.textContent = message;
         result.className = `result show ${type}`;
       };
 
+      const addToHistory = (nums, label, didFindCounterexample) => {
+        const item = document.createElement("li");
+        const sequence = document.createElement("span");
+        const verdict = document.createElement("span");
+        sequence.textContent = nums.join(", ");
+        verdict.textContent = label;
+        verdict.className = `pill ${didFindCounterexample ? "yes" : "no"}`;
+        item.append(sequence, verdict);
+        historyList.prepend(item);
+      };
+
       form.addEventListener("submit", (event) => {
         event.preventDefault();
-        const word = input.value.trim();
+        const nums = fields.map((field) => Number(field.value));
 
-        if (!isSingleWord(word)) {
-          show("Please enter a single word using letters only.", "error");
+        if (!nums.every(Number.isFinite)) {
+          showResult("Please enter three valid numbers.", "error");
           return;
         }
 
-        show(
-          checkPreference(word) ? `Mr. Green likes ${word}` : `Mr. Green does NOT like ${word}`,
-          checkPreference(word) ? "likes" : "dislikes"
-        );
+        const accepted = originalRule(...nums);
+        const followsGuess = guessedRule(...nums);
+        const counterexample = accepted && !followsGuess;
+
+        if (counterexample) {
+          showResult("Counterexample found — this sequence is accepted, but it does not follow the guessed rule.", "yes");
+          addToHistory(nums, "COUNTEREXAMPLE", true);
+        } else if (accepted) {
+          showResult("Accepted — but this still supports the guessed rule instead of challenging it.", "yes");
+          addToHistory(nums, "ACCEPTED", false);
+        } else {
+          showResult("Rejected — this does not match the original hidden rule, so it does not disprove the guessed rule.", "no");
+          addToHistory(nums, "REJECTED", false);
+        }
       });
 
-      $("resetButton").addEventListener("click", () => {
+      resetButton.addEventListener("click", () => {
         form.reset();
         result.className = "result";
         result.textContent = "";
-        input.focus();
+        historyList.innerHTML = "";
+        fields[0].focus();
       });
-
 
       const revealRule = $("revealRule");
       const ruleExplanation = $("ruleExplanation");
@@ -403,17 +485,13 @@
       };
 
       revealRule.addEventListener("click", openAnswerModal);
-
       cancelReveal.addEventListener("click", closeAnswerModal);
-
       answerModal.addEventListener("click", (event) => {
         if (event.target === answerModal) closeAnswerModal();
       });
-
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && !answerModal.hidden) closeAnswerModal();
       });
-
       confirmReveal.addEventListener("click", () => {
         answerModal.hidden = true;
         ruleExplanation.hidden = false;

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Grandma Likes</title>
+  <title>Mr. Green Likes</title>
   <link rel="icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
@@ -161,6 +161,44 @@
       color: #92400e;
     }
 
+
+
+    .history {
+      margin-top: 28px;
+    }
+
+    .history h2 {
+      font-size: 1rem;
+      margin: 0 0 10px;
+      color: var(--muted);
+    }
+
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .history-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .pill {
+      white-space: nowrap;
+      font-weight: 900;
+    }
+
+    .pill.yes { color: #047857; }
+    .pill.no { color: #dc2626; }
+
     .puzzle-nav {
       padding: 24px;
       text-align: center;
@@ -295,14 +333,13 @@
 <body>
   <main class="app">
     <section class="panel">
-      <h1>My Grandma Likes</h1>
-      <p class="subtitle">Type one word to see whether my grandma likes it. Try to figure out the hidden rule.</p>
-
+      <h1>Mr. Green Likes</h1>
+      <p class="subtitle">Type one word to see whether Mr. Green likes it. Try to figure out the hidden rule.</p>
       <section class="example" aria-label="Example clue">
-        My grandma likes coffee but not tea.
+        Mr. Green likes books but not reading.
       </section>
 
-      <form id="grandmaForm">
+      <form id="greenForm">
         <label>
           Word
           <input id="wordInput" type="text" autocomplete="off" required />
@@ -315,15 +352,19 @@
       </form>
 
       <div id="result" class="result" role="status" aria-live="polite"></div>
+
+      <section class="history" aria-label="Guess history">
+        <h2>Guess history</h2>
+        <ul id="historyList" class="history-list"></ul>
+      </section>
       <button class="reveal-answer" type="button" id="revealRule">Show rule explanation</button>
     </section>
 
     <section class="panel rule-explanation" id="ruleExplanation" hidden>
       <h2>Rule Explanation</h2>
-      <p>My grandma does <strong>not</strong> like words that contain the letter <strong>T</strong>.</p>
-      <p>The word must be a single word using letters only. If the word contains T or t, she does not like it. If it does not contain T or t, she likes it.</p>
-      <p>The hint was there all the time! My Grandma does not like TEA (as in the letter T)</p>
-      <p>Did you get this one?</p>
+      <p>Mr. Green likes words that contain <strong>at least one pair of double letters</strong>.</p>
+      <p>The word must be a single word using letters only. If the word has two of the same letter in a row, Mr. Green likes it. If it does not, he does not like it. That's why Mr. Green likes books but not reading.</p>
+      <p>Did you get it right?</p>
     </section>
 
     <nav class="puzzle-nav" aria-label="Puzzle navigation">
@@ -333,6 +374,7 @@
         <a href="2.html" data-page="2.html">Puzzle 2</a>
         <a href="3.html" data-page="3.html">Puzzle 3</a>
         <a href="4.html" data-page="4.html">Puzzle 4</a>
+        <a href="5.html" data-page="5.html">Puzzle 5</a>
       </div>
     </nav>
   </main>
@@ -353,16 +395,30 @@
   <script>
     (() => {
       const $ = (id) => document.getElementById(id);
-      const form = $("grandmaForm");
+      const form = $("greenForm");
       const input = $("wordInput");
       const result = $("result");
+      const historyList = $("historyList");
 
       const isSingleWord = (value) => /^[A-Za-z]+$/.test(value);
-      const checkPreference = (value) => !/t/i.test(value);
+      const checkPreference = (value) => /([A-Za-z])\1/i.test(value);
 
       const show = (message, type) => {
         result.textContent = message;
         result.className = `result show ${type}`;
+      };
+
+      const addToHistory = (word, liked) => {
+        const item = document.createElement("li");
+        const guess = document.createElement("span");
+        const verdict = document.createElement("span");
+
+        guess.textContent = word;
+        verdict.textContent = liked ? "LIKES" : "DOES NOT LIKE";
+        verdict.className = `pill ${liked ? "yes" : "no"}`;
+
+        item.append(guess, verdict);
+        historyList.prepend(item);
       };
 
       form.addEventListener("submit", (event) => {
@@ -374,16 +430,21 @@
           return;
         }
 
+        const liked = checkPreference(word);
+
         show(
-          checkPreference(word) ? `My grandma likes ${word}` : `My grandma does NOT like ${word}`,
-          checkPreference(word) ? "likes" : "dislikes"
+          liked ? `Mr. Green likes ${word}` : `Mr. Green does NOT like ${word}`,
+          liked ? "likes" : "dislikes"
         );
+
+        addToHistory(word, liked);
       });
 
       $("resetButton").addEventListener("click", () => {
         form.reset();
         result.className = "result";
         result.textContent = "";
+        historyList.innerHTML = "";
         input.focus();
       });
 
